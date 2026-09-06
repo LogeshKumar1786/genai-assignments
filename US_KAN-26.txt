@@ -1,0 +1,7 @@
+UserStory No: KAN-26
+UserStory 
+Employee Profile Basic Details
+Description
+As a user, I want to employee profile basic details so that the related functionality works as expected.
+Acceptance Criteria
+Given the system is operational, when the user performs the intended action, then the system should respond accurately and meet functional expectations.
