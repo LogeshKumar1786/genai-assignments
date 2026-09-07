@@ -1,0 +1,14 @@
+UserStory No: KAN-26
+UserStory Name : Employee Profile Basic Details
+Description
+As a user, I want to employee profile basic details so that the related functionality works as expected.
+Acceptance Criteria
+Given the system is operational, when the user performs the intended action, then the system should respond accurately and meet functional expectations.
+----------------------------------------------------------------
+UserStory No: KAN-27
+UserStory Name : Doctor Activities Raise Request
+Description
+As a user, I want to doctor activities raise request so that the related functionality works as expected.
+Acceptance Criteria
+Given the system is operational, when the user performs the intended action, then the system should respond accurately and meet functional expectations.
+----------------------------------------------------------------------
