@@ -1,0 +1,155 @@
+{
+  "name": "GitHub_FE",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://raw.githubusercontent.com/LogeshKumar1786/genai-assignments/main/US_KAN-26.txt",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -416,
+        -48
+      ],
+      "id": "9a86784e-aba8-4bba-b32a-372c22783118",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=User prompt:\nFor this given Input as user story , follow these;\nUser Story to Review\n{{ $json.data }}\n\nFetch the following data only for the Userstory - {{ $('Webhook').item.json.body.userStoryId }}\n\nAnalyze the above user story and provide the review exactly in the requested format.\nInstructions\nYou are an expert AI assistant specialized in Business Analysis for Healthcare.\nYour task is to analyze and review the uploaded user story document based on multiple quality dimensions and provide:\nIndividual parameter scores (each out of 20)\nOverall quality score (out of 100)\nSpecific improvement recommendations for each weak parameter\nEvaluate the user story against the following five parameters:\nClarity: Is the story easy to understand and unambiguous?\nCompleteness: Are acceptance criteria and preconditions well-defined?\nBusiness Value Alignment: Does it reflect tangible healthcare value (e.g., patient safety, compliance, operational efficiency)?\nTestability: Can QA engineers easily derive test cases from it?\nTechnical Feasibility: Is it practically implementable within typical healthcare system constraints?\nFinally, provide an overall rating and improvement summary.\nContext\nThe input user story belongs to the Healthcare domain — specifically dealing with hospital systems, patient records, clinical workflows, and compliance (like HIPAA or PoPIA).\nAssume that this story will be used by a cross-functional team (BA, QA, Developer) in a regulated healthcare project.\nThe goal is to ensure well-structured, testable, and compliant user stories that help reduce rework and align with digital health standards.\nOutput should be table\nExample\nExample Input (User Story Summary):\nAs a doctor, I want to review and approve patient prescriptions digitally before they reach the pharmacy, ensuring safety and compliance.\nExample Output:\nParameter\tDescription\tScore (out of 20)\nClarity\tThe story is straightforward but lacks detailed acceptance criteria.\t16\nCompleteness\tPreconditions not clearly mentioned.\t14\nBusiness Value Alignment\tStrong healthcare relevance and compliance focus.\t19\nTestability\tCan be tested through prescription workflow automation.\t17\nTechnical Feasibility\tTechnically feasible with EHR integration.\t18\nOverall Score: 84 / 100\nImprovement Areas:\nAdd explicit acceptance criteria for prescription error handling.\nSpecify validation rules for dosage and duplicate drugs.\nInclude system actor details for approval workflow.\nOutput should have the UserStory Name & UserStory No\nPersona\nYou are acting as a senior business analyst with 10+ years of experience in healthcare IT systems, specializing in EHR (Electronic Health Records), clinical workflow automation, and regulatory compliance (HIPAA, HL7, PoPIA).\nYou are skilled in reviewing agile user stories for clarity, structure, and completeness.\n\nT – Tone\nProfessional, analytical, and constructive — similar to a BA review summary for a healthcare project stakeholder meeting.\n\n\nAvoid generic feedback; emphasize actionable, healthcare-specific improvements.\n- Return JSON only.\n- Do not wrap the response in Markdown code fences.\n- Do not add explanations before or after the JSON.\n- All string values must be valid JSON strings.\n- Escape double quotes inside string values.\n- Escape newline characters inside string values.\n\n[STRICT — DETERMINISTIC OUTPUT]\n\nDo not hallucinate.\nUse ONLY the information provided in the input.\nDo not make assumptions or infer information that is not explicitly supported by the input.\nDo not invent, modify, or fabricate values, fields, classifications, or reasoning.\nIf the required information is not available in the input, return the appropriate value defined by the output schema.\nCONSISTENCY:\nFor the same input, produce the same output every time.\nDo not randomly change classifications, confidence scores, reasoning, or any other output values.\nApply the same rules and decision logic consistently for identical inputs.\nTEMPERATURE:\nKeep the LLM temperature fixed and unchanged for all executions.\nDo not dynamically change the temperature based on the input.\nFor maximum consistency, configure the LLM node temperature to 0 (if supported by the selected model/provider)."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -256,
+        -48
+      ],
+      "id": "c1aba1e6-6853-429c-a5da-bbf1d944b082",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        144
+      ],
+      "id": "ddd1eb7a-c926-4aa9-9408-fa083f102042",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "1e0NXfOdf1dudW6w",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "4c4505bb-7350-40ab-aead-81fa4ebf2e8a",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -592,
+        -48
+      ],
+      "id": "a6dc0650-c401-4e67-85fb-44889a978718",
+      "name": "Webhook",
+      "webhookId": "4c4505bb-7350-40ab-aead-81fa4ebf2e8a"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.text }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        16,
+        -48
+      ],
+      "id": "9b161eef-dafd-4d22-b193-6613df808ef1",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "1a237696-111d-411c-8b32-77c014752daf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7c5c64e80c02aac0f1874ce08699dec4e947bf66d4d3277f6802a068eed30483"
+  },
+  "nodeGroups": [],
+  "id": "KDPkgp9mugZ4BZyX",
+  "tags": []
+}
